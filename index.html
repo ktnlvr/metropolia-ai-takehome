@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://metropolia.fi/themes/custom/metropolia/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://metropolia.fi/themes/custom/metropolia/favicon/favicon-16x16.png">
+    <title>Metropolia Student Assistance for AI Homework</title>
+    <script defer>
+        const history = [];
+
+        window.onload = () => {
+            async function translate(text) {
+                const response = await fetch('/translate', {
+                    body: text.toString(), method: "POST"
+                });
+                const translated = await response.text();
+
+                history.push({ en: text, fi: translated })
+                return translated;
+            }
+
+            const button = document.getElementById('translate');
+            const input = document.getElementById('input');
+            const output = document.getElementById('output');
+
+            button.onclick = async () => {
+                const text = input.value;
+                let translated = await translate(text);
+                output.textContent = translated;
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <main>
+        <div id="output"></div>
+        <textarea id="input"></textarea>
+        <button id="translate">Translate</button>
+    </main>
+</body>
+
+</html>

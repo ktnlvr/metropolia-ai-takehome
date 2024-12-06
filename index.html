@@ -4,8 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://metropolia.fi/themes/custom/metropolia/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://metropolia.fi/themes/custom/metropolia/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="https://metropolia.fi/themes/custom/metropolia/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="https://metropolia.fi/themes/custom/metropolia/favicon/favicon-16x16.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
     <title>Metropolia Student Assistance for AI Homework</title>
     <script defer>
         const history = [];
@@ -32,10 +39,34 @@
             }
         }
     </script>
+    <style>
+        :root {
+            font-family: "Roboto", sans-serif;
+        }
+        
+        h1 {
+            font-family: "Roboto Slab", serif;
+        }
+
+        body {
+            margin: 40px auto;
+            max-width: 650px;
+            line-height: 1.6;
+            font-size: 18px;
+            padding: 0 10px
+        }
+
+        h1,
+        h2,
+        h3 {
+            line-height: 1.2
+        }
+    </style>
 </head>
 
 <body>
     <main>
+        <h1>Translator</h1>
         <div id="output"></div>
         <textarea id="input"></textarea>
         <button id="translate">Translate</button>

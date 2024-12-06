@@ -19,7 +19,7 @@
 
         window.onload = () => {
             async function translate(text) {
-                const response = await fetch('/translate', {
+                const response = await fetch("/translate", {
                     body: text.toString(), method: "POST"
                 });
                 const translated = await response.text();
@@ -34,7 +34,10 @@
 
             button.onclick = async () => {
                 const text = input.value;
+                output.classList.add("thinking");
+                output.textContent = "Thinking...";
                 let translated = await translate(text);
+                output.classList.remove("thinking");
                 output.textContent = translated;
             }
         }
@@ -43,7 +46,7 @@
         :root {
             font-family: "Roboto", sans-serif;
         }
-        
+
         h1 {
             font-family: "Roboto Slab", serif;
         }
@@ -61,13 +64,18 @@
         h3 {
             line-height: 1.2
         }
+
+        .thinking {
+            font-style: italic;
+            color: #666;
+        }
     </style>
 </head>
 
 <body>
     <main>
         <h1>Translator</h1>
-        <div id="output"></div>
+        <div>🤖 <span id="output"></span></div>
         <textarea id="input"></textarea>
         <button id="translate">Translate</button>
     </main>

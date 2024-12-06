@@ -2,6 +2,8 @@ from flask import Flask, render_template, request
 from transformers import pipeline
 from torch.cuda import is_available as has_cuda
 
+print("Setting up, the model takes some time to startup")
+
 app = Flask(__name__, template_folder=".")
 
 model_checkpoint = "Helsinki-NLP/opus-mt-en-fi"
@@ -9,11 +11,38 @@ translator = pipeline(
     "translation", model=model_checkpoint, device="cuda" if has_cuda() else "cpu"
 )
 
+def splitby(string: str, by: list[str]):
+    i = 0
+    while i < len(string):
+        for sep in by:
+            if string[i:].startswith(sep):
+                ret = string[:i]
+                yield ret, sep
+                string = string[i + len(sep):]
+        i += 1
+    if string:
+        yield string, ''
+
 
 @app.route("/translate", methods=["POST"])
 def post():
-    text = request.get_data(as_text=True)
-    return str(translator(text)[0]["translation_text"])
+    text = request.get_data(as_text=True).strip()
+    # I noticed that the translation engine doesn't do too well with
+    # multiple sentences, so split by punctuation
+    output = ""
+    splits = list(splitby(text, [".", "!", "?"]))
+
+    def cleanup(string):
+        return string.removesuffix('.').removesuffix('!').removesuffix('?')
+
+    # Batch the sentences
+    sentences = [cleanup(sentence) for sentence, _ in splits]
+    puncts = [punct for _, punct in splits]
+    
+    translated = map(lambda res: cleanup(res['translation_text']), translator(sentences))
+    for sentence, punct in zip(translated, puncts):
+        output += sentence + punct + ' '
+    return output
 
 
 @app.route("/")

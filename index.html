@@ -74,7 +74,10 @@
             }
 
             translateButton.onclick = async () => {
-                const text = input.value;
+                const text = input.value.trim();
+                if (!text)
+                    return;
+
                 output.classList.add("thinking");
                 output.textContent = "Thinking...";
 

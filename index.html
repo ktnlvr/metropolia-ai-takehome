@@ -15,30 +15,85 @@
 
     <title>Metropolia Student Assistance for AI Homework</title>
     <script defer>
-        const history = [];
+        'use strict';
 
         window.onload = () => {
+            const translateButton = document.getElementById('translate');
+            const input = document.getElementById('input');
+            const output = document.getElementById('output');
+            const history = document.getElementById('history');
+            const clearHistoryButton = document.getElementById('clear-history');
+
+            function appendHistory(en, fi, ts) {
+                const div = document.createElement('div');
+                div.classList.add("history-entry");
+
+                const timestamp = ts;
+
+                div.innerHTML = `
+                    <p class="history-query">
+                        
+                        🧑 ${en}
+                    </p>
+                    <p class="history-response">
+                        <span>🤖 ${fi}</span><br>
+                        <span class="history-timestamp">${timestamp}</span>
+                    <p>
+                `
+
+                history.insertBefore(div, history.firstChild);
+            }
+
+            function getHistory() {
+                return JSON.parse(localStorage.getItem('history') || "[]").reverse();
+            }
+
+            function updateHistory(en, fi, ts) {
+                const history = getHistory();
+                history.push({ en, fi, ts });
+                localStorage.setItem('history', JSON.stringify(history));
+                appendHistory(en, fi, ts)
+            }
+
+            function refreshHistory() {
+                const history = getHistory();
+                if (history) {
+                    history.innerText = "";
+                    for (const { en, fi, ts } of history) {
+                        appendHistory(en, fi, ts);
+                    }
+                } else {
+                    history.innerText = "No history yet. Make a query!"
+                }
+            }
+
+            refreshHistory();
+
             async function translate(text) {
                 const response = await fetch("/translate", {
                     body: text.toString(), method: "POST"
                 });
                 const translated = await response.text();
 
-                history.push({ en: text, fi: translated })
                 return translated;
             }
 
-            const button = document.getElementById('translate');
-            const input = document.getElementById('input');
-            const output = document.getElementById('output');
-
-            button.onclick = async () => {
+            translateButton.onclick = async () => {
                 const text = input.value;
                 output.classList.add("thinking");
                 output.textContent = "Thinking...";
-                let translated = await translate(text);
+
+                const translated = await translate(text);
                 output.classList.remove("thinking");
                 output.textContent = translated;
+
+                const ts = new Date().toUTCString();
+                updateHistory(text, translated, ts);
+            }
+
+            clearHistoryButton.onclick = () => {
+                localStorage.clear();
+                refreshHistory();
             }
         }
     </script>
@@ -47,13 +102,9 @@
             font-family: "Roboto", sans-serif;
         }
 
-        h1 {
-            font-family: "Roboto Slab", serif;
-        }
-
         body {
             margin: 40px auto;
-            max-width: 650px;
+            max-width: 500px;
             line-height: 1.6;
             font-size: 18px;
             padding: 0 10px
@@ -62,12 +113,46 @@
         h1,
         h2,
         h3 {
+            font-family: "Roboto Slab", serif;
             line-height: 1.2
         }
 
         .thinking {
             font-style: italic;
-            color: #666;
+            color: #555;
+        }
+
+        #input {
+            width: 100%;
+            resize: none;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: row;
+        }
+
+        p {
+            margin: 2px 0;
+        }
+
+        #history {
+            margin-top: 30px;
+        }
+
+        .history-query {
+            text-align: right;
+        }
+
+        .history-timestamp {
+            color: #555;
+            font-style: italic;
+            font-size: smaller;
+        }
+        
+        .history-entry {
+            border-left: thick #555 ;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -75,9 +160,16 @@
 <body>
     <main>
         <h1>Translator</h1>
-        <div>🤖 <span id="output"></span></div>
+        <p>🤖 <span id="output" class="thinking">Hello! Input the text below and press the "Translate" button.</span>
+        </p>
         <textarea id="input"></textarea>
-        <button id="translate">Translate</button>
+        <div class="controls">
+            <button id="translate">Translate</button>
+        </div>
+        <div>
+            <div id="history">No history yet. Make a query and it will appear here!</div>
+            <button id="clear-history">Clear History</button>
+        </div>
     </main>
 </body>
 

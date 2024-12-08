@@ -56,14 +56,9 @@
             }
 
             function refreshHistory() {
-                const history = getHistory();
-                if (history) {
-                    history.innerText = "";
-                    for (const { en, fi, ts } of history) {
-                        appendHistory(en, fi, ts);
-                    }
-                } else {
-                    history.innerText = "No history yet. Make a query!"
+                history.innerHTML = "";
+                for (const { en, fi, ts } of getHistory()) {
+                    appendHistory(en, fi, ts);
                 }
             }
 
@@ -92,6 +87,7 @@
             }
 
             clearHistoryButton.onclick = () => {
+                console.log("Hello, world!")
                 localStorage.clear();
                 refreshHistory();
             }
@@ -165,9 +161,11 @@
         <textarea id="input"></textarea>
         <div class="controls">
             <button id="translate">Translate</button>
+            <input id="improve" title="Split by punctuation and batch. Only untick if you know what you're doing." type="checkbox" name="improve" checked="true">
+            <label for="improve" style="font: smaller">Improve</label>
         </div>
         <div>
-            <div id="history">No history yet. Make a query and it will appear here!</div>
+            <div id="history"></div>
             <button id="clear-history">Clear History</button>
         </div>
     </main>

@@ -1,6 +1,6 @@
 # Metropolia AI Translator
 
-a takehome for the "Student assistants for Metropolia AI project".
+a takehome for the "Student assistants for Metropolia AI project."
 
 ## Installation
 

@@ -31,21 +31,20 @@
                 const timestamp = ts;
 
                 div.innerHTML = `
-                    <p class="history-query">
-                        
-                        🧑 ${en}
-                    </p>
                     <p class="history-response">
-                        <span>🤖 ${fi}</span><br>
-                        <span class="history-timestamp">${timestamp}</span>
+                        🧑<br>${en}
                     <p>
+                    <p class="history-query">
+                        <span>🤖<br>${fi}</span><br>
+                        <span class="history-timestamp">${timestamp}</span>
+                    </p>
                 `
 
-                history.insertBefore(div, history.firstChild);
+                history.appendChild(div);
             }
 
             function getHistory() {
-                return JSON.parse(localStorage.getItem('history') || "[]").reverse();
+                return JSON.parse(localStorage.getItem('history') || "[]");
             }
 
             function updateHistory(en, fi, ts) {
@@ -66,7 +65,7 @@
 
             async function translate(text) {
                 const response = await fetch("/translate", {
-                    body: text.toString(), method: "POST"
+                    body: text.toString(), method: "POST",
                 });
                 const translated = await response.text();
 
@@ -83,7 +82,7 @@
 
                 const translated = await translate(text);
                 output.classList.remove("thinking");
-                output.textContent = translated;
+                output.textContent = "";
 
                 const ts = new Date().toUTCString();
                 updateHistory(text, translated, ts);
@@ -141,7 +140,13 @@
         }
 
         .history-query {
+            text-align: left;
+            padding-right: 10%;
+        }
+
+        .history-response {
             text-align: right;
+            padding-left: 10%;
         }
 
         .history-timestamp {
@@ -149,9 +154,9 @@
             font-style: italic;
             font-size: smaller;
         }
-        
+
         .history-entry {
-            border-left: thick #555 ;
+            border-left: thick #555;
             margin-bottom: 20px;
         }
     </style>
@@ -160,16 +165,16 @@
 <body>
     <main>
         <h1>Translator</h1>
-        <p>🤖 <span id="output" class="thinking">Hello! Input the text below and press the "Translate" button.</span>
+        <div id="history"></div>
+        <p>🤖 
+            <span id="output" class="thinking">Hello! Input the text below and press "Translate."</span>
         </p>
         <textarea id="input"></textarea>
         <div class="controls">
             <button id="translate">Translate</button>
-            <input id="improve" title="Split by punctuation and batch. Only untick if you know what you're doing." type="checkbox" name="improve" checked="true">
+            <input id="improve" title="Split by punctuation and batch. Only untick if you know what you're doing."
+            type="checkbox" name="improve" checked="true">
             <label for="improve" style="font: smaller">Improve</label>
-        </div>
-        <div>
-            <div id="history"></div>
             <button id="clear-history">Clear History</button>
         </div>
     </main>

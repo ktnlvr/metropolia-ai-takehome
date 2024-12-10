@@ -85,6 +85,7 @@ translateButton.onclick = async () => {
     const translated = await translate(text);
     hint.classList.add("hidden");
     hint.textContent = "";
+    input.value = "";
 
     const ts = new Date().toUTCString();
     updateHistory(text, translated, ts);

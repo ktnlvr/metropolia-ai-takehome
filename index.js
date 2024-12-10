@@ -86,11 +86,12 @@ translateButton.onclick = async () => {
     hint.classList.remove("hidden");
     hint.textContent = "Thinking...";
 
+    input.value = "";
+    
     const improve = improveCheckbox.checked
     const translated = await translate(text, improve);
     hint.classList.add("hidden");
     hint.textContent = "";
-    input.value = "";
 
     const ts = new Date().toUTCString();
     updateHistory(text, translated, ts);

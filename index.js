@@ -5,6 +5,7 @@ const input = document.getElementById('input');
 const hint = document.getElementById('hint-output');
 const history = document.getElementById('history');
 const clearHistoryButton = document.getElementById('clear-history');
+const improveCheckbox = document.getElementById('improve');
 
 input.onkeydown = async (e) => {
     // Key code for '\n'
@@ -65,13 +66,16 @@ function refreshHistory() {
 
 refreshHistory();
 
-async function translate(text) {
-    const response = await fetch("/translate", {
-        body: text.toString(), method: "POST",
-    });
-    const translated = await response.text();
+async function translate(text, improve) {
+    const body = JSON.stringify({ text, improve: !!improve });
+    const method = "POST";
 
-    return translated;
+    const response = await fetch("/translate", {
+        body, method,
+    });
+    const json = await response.json();
+
+    return json.translated;
 }
 
 translateButton.onclick = async () => {
@@ -82,7 +86,8 @@ translateButton.onclick = async () => {
     hint.classList.remove("hidden");
     hint.textContent = "Thinking...";
 
-    const translated = await translate(text);
+    const improve = improveCheckbox.checked
+    const translated = await translate(text, improve);
     hint.classList.add("hidden");
     hint.textContent = "";
     input.value = "";

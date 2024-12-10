@@ -26,23 +26,31 @@ def splitby(string: str, by: list[str]):
 
 @app.route("/translate", methods=["POST"])
 def post():
-    text = request.get_data(as_text=True).strip()
-    # I noticed that the translation engine doesn't do too well with
-    # multiple sentences, so split by punctuation
-    output = ""
-    splits = list(splitby(text, [".", "!", "?"]))
+    body = request.get_json(force=True)
 
-    def cleanup(string):
-        return string.removesuffix('.').removesuffix('!').removesuffix('?')
+    improve = body.get('improve') or False
+    text = body['text']
 
-    # Batch the sentences
-    sentences = [cleanup(sentence) for sentence, _ in splits]
-    puncts = [punct for _, punct in splits]
+    if improve:
+        # I noticed that the translation engine doesn't do too well with
+        # multiple sentences, so split by punctuation
+        output = ""
+        splits = list(splitby(text, [".", "!", "?"]))
+
+        def cleanup(string):
+            return string.removesuffix('.').removesuffix('!').removesuffix('?')
+
+        # Batch the sentences
+        sentences = [cleanup(sentence) for sentence, _ in splits]
+        puncts = [punct for _, punct in splits]
     
-    translated = map(lambda res: cleanup(res['translation_text']), translator(sentences))
-    for sentence, punct in zip(translated, puncts):
-        output += sentence + punct + ' '
-    return output
+        translated = map(lambda res: cleanup(res['translation_text']), translator(sentences))
+        for sentence, punct in zip(translated, puncts):
+            output += sentence + punct + ' '
+    else:
+        output = translator(text)[0]['translation_text']
+
+    return { 'translated': output }
 
 js = None
 with open('./index.js', 'r') as file:

@@ -63,7 +63,7 @@
             text-align: right;
             padding-left: 10%;
         }
-        
+
         .history-response {
             text-align: left;
             padding-right: 10%;
@@ -99,8 +99,9 @@
     <main>
         <h1>Translator</h1>
         <div id="history"></div>
-        <p id="hint">🤖 
-            <span id="hint-output">Hello! Input the text below and press Enter or "Translate."</span>
+        <p id="hint">🤖
+            <span id="hint-output">Hello! Input the text below and press Enter or "Translate."
+                Made by Artur Roos &lt;arturro@metropolia.fi&gt; TXL24S-C</span>
         </p>
         <div class="controls">
             <div style="display: flex; flex-direction: row;">
@@ -108,9 +109,9 @@
                 <button id="translate" style="aspect-ratio: 1;">Translate</button>
             </div>
             <span>
-                <input id="improve" title="Split by punctuation and batch. Only untick if you know what you're doing."
-                type="checkbox" name="improve" checked="true">
-                <label for="improve" style="font: smaller">Improve</label>
+                <input id="improve" type="checkbox" name="improve" checked>
+                <label title="Split by punctuation and batch. Only untick if you know what you're doing." for="improve"
+                    style="font: smaller">Improve</label>
             </span>
             <button id="clear-history">Clear History</button>
         </div>

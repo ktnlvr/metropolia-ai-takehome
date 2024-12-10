@@ -20,7 +20,7 @@
         window.onload = () => {
             const translateButton = document.getElementById('translate');
             const input = document.getElementById('input');
-            const output = document.getElementById('output');
+            const hint = document.getElementById('hint-output');
             const history = document.getElementById('history');
             const clearHistoryButton = document.getElementById('clear-history');
 
@@ -31,16 +31,25 @@
                 const timestamp = ts;
 
                 div.innerHTML = `
-                    <p class="history-response">
+                    <p class="history-query">
                         🧑<br>${en}
                     <p>
-                    <p class="history-query">
+                    <p class="history-response">
                         <span>🤖<br>${fi}</span><br>
-                        <span class="history-timestamp">${timestamp}</span>
+                        <span class="history-addendum">
+                            ${timestamp}
+                            (<a class="copy">copy</a>)
+                        </span>
                     </p>
                 `
 
+                const copy = div.getElementsByClassName('copy')[0];
+                copy.onclick = async () => {
+                    await navigator.clipboard.writeText(fi);
+                }
+
                 history.appendChild(div);
+                return div;
             }
 
             function getHistory() {
@@ -52,6 +61,7 @@
                 history.push({ en, fi, ts });
                 localStorage.setItem('history', JSON.stringify(history));
                 appendHistory(en, fi, ts)
+                input.scrollIntoView();
             }
 
             function refreshHistory() {
@@ -77,12 +87,12 @@
                 if (!text)
                     return;
 
-                output.classList.add("thinking");
-                output.textContent = "Thinking...";
+                hint.classList.remove("hidden");
+                hint.textContent = "Thinking...";
 
                 const translated = await translate(text);
-                output.classList.remove("thinking");
-                output.textContent = "";
+                hint.classList.add("hidden");
+                hint.textContent = "";
 
                 const ts = new Date().toUTCString();
                 updateHistory(text, translated, ts);
@@ -115,7 +125,7 @@
             line-height: 1.2
         }
 
-        .thinking {
+        #hint-output {
             font-style: italic;
             color: #555;
         }
@@ -128,7 +138,7 @@
 
         .controls {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
         }
 
         p {
@@ -140,16 +150,16 @@
         }
 
         .history-query {
+            text-align: right;
+            padding-left: 10%;
+        }
+        
+        .history-response {
             text-align: left;
             padding-right: 10%;
         }
 
-        .history-response {
-            text-align: right;
-            padding-left: 10%;
-        }
-
-        .history-timestamp {
+        .history-addendum {
             color: #555;
             font-style: italic;
             font-size: smaller;
@@ -159,6 +169,19 @@
             border-left: thick #555;
             margin-bottom: 20px;
         }
+
+        .hidden {
+            display: none;
+        }
+
+        .copy {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        main {
+            padding-bottom: 200px;
+        }
     </style>
 </head>
 
@@ -166,15 +189,19 @@
     <main>
         <h1>Translator</h1>
         <div id="history"></div>
-        <p>🤖 
-            <span id="output" class="thinking">Hello! Input the text below and press "Translate."</span>
+        <p id="hint">🤖 
+            <span id="hint-output">Hello! Input the text below and press Enter or "Translate."</span>
         </p>
-        <textarea id="input"></textarea>
         <div class="controls">
-            <button id="translate">Translate</button>
-            <input id="improve" title="Split by punctuation and batch. Only untick if you know what you're doing."
-            type="checkbox" name="improve" checked="true">
-            <label for="improve" style="font: smaller">Improve</label>
+            <div style="display: flex; flex-direction: row;">
+                <textarea id="input" style="padding-right: 40px;"></textarea>
+                <button id="translate" style="aspect-ratio: 1;">Translate</button>
+            </div>
+            <span>
+                <input id="improve" title="Split by punctuation and batch. Only untick if you know what you're doing."
+                type="checkbox" name="improve" checked="true">
+                <label for="improve" style="font: smaller">Improve</label>
+            </span>
             <button id="clear-history">Clear History</button>
         </div>
     </main>

@@ -6,6 +6,14 @@ const hint = document.getElementById('hint-output');
 const history = document.getElementById('history');
 const clearHistoryButton = document.getElementById('clear-history');
 
+input.onkeydown = async (e) => {
+    // Key code for '\n'
+    if (e.keyCode == 13) {
+        e.preventDefault();
+        await translateButton.onclick()
+    }
+}
+
 function appendHistory(en, fi, ts) {
     const div = document.createElement('div');
     div.classList.add("history-entry");
@@ -31,7 +39,6 @@ function appendHistory(en, fi, ts) {
     }
 
     history.appendChild(div);
-    return div;
 }
 
 function getHistory() {
@@ -42,7 +49,7 @@ function updateHistory(en, fi, ts) {
     const history = getHistory();
     history.push({ en, fi, ts });
     localStorage.setItem('history', JSON.stringify(history));
-    const latest = appendHistory(en, fi, ts)
+    appendHistory(en, fi, ts)
     input.scrollIntoView({
         'behavior': 'smooth',
         'block': 'start',

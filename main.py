@@ -44,6 +44,13 @@ def post():
         output += sentence + punct + ' '
     return output
 
+js = None
+with open('./index.js', 'r') as file:
+    js = file.read()
+
+@app.route("/index.js")
+def script():
+    return js
 
 @app.route("/")
 def index():
